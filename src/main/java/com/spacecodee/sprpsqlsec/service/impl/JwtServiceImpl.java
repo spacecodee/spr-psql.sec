@@ -4,6 +4,7 @@ import com.spacecodee.sprpsqlsec.service.IJwtService;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,15 +18,15 @@ import java.util.Map;
 public class JwtServiceImpl implements IJwtService {
 
     @Value("${security.jwt.expiration-in-minutes}")
-    private static long EXPIRATION_IN_MINUTES;
+    private long EXPIRATION_IN_MINUTES;
     @Value("${security.jwt.secret-key}")
-    private static String SECRET_KEY;
+    private String SECRET_KEY;
 
     @Override
     public String generateToken(UserDetails user, Map<String, Object> extraClaims) {
 
         var issuedAt = new Date(System.currentTimeMillis());
-        var expiration = new Date((EXPIRATION_IN_MINUTES * 60 * 1000) + issuedAt.getTime());
+        var expiration = new Date((this.EXPIRATION_IN_MINUTES * 60 * 1000) + issuedAt.getTime());
 
         return Jwts.builder()
                 .setClaims(extraClaims)
@@ -38,7 +39,7 @@ public class JwtServiceImpl implements IJwtService {
     }
 
     private Key generateKey() {
-        byte[] keyBytes = SECRET_KEY.getBytes();
-        return Keys.hmacShaKeyFor(keyBytes);
+        var passDecoder = Decoders.BASE64.decode(this.SECRET_KEY);
+        return Keys.hmacShaKeyFor(passDecoder);
     }
 }
