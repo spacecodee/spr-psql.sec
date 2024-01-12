@@ -1,12 +1,17 @@
 package com.spacecodee.sprpsqlsec.service.impl;
 
 import com.spacecodee.sprpsqlsec.data.dto.RegisterUserDto;
+import com.spacecodee.sprpsqlsec.data.pojo.AuthenticationResponsePojo;
+import com.spacecodee.sprpsqlsec.data.vo.AuthenticationRequestVo;
 import com.spacecodee.sprpsqlsec.data.vo.SaveUserVo;
 import com.spacecodee.sprpsqlsec.data.vo.UDUserVo;
 import com.spacecodee.sprpsqlsec.service.IAuthenticationService;
 import com.spacecodee.sprpsqlsec.service.IJwtService;
 import com.spacecodee.sprpsqlsec.service.IUserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -17,6 +22,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     private final IUserService userService;
     private final IJwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public RegisterUserDto registerOneCustomer(SaveUserVo newUser) {
@@ -32,6 +38,33 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         var jwt = this.jwtService.generateToken(user, this.generateExtraClaims(user));
         userDto.setJwt(jwt);
         return userDto;
+    }
+
+    @Override
+    public AuthenticationResponsePojo login(AuthenticationRequestVo request) {
+        Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+        this.authenticationManager.authenticate(authentication);
+
+        var userD = this.userService.findOneByUsername(request.getUsername()).get();
+        String jwt = this.jwtService.generateToken(userD, this.generateExtraClaims(userD));
+
+        AuthenticationResponsePojo rsp = new AuthenticationResponsePojo();
+        rsp.setJwt(jwt);
+
+        return rsp;
+    }
+
+    @Override
+    public boolean validateToken(String jwt) {
+
+        try {
+            this.jwtService.extractUsername(jwt);
+
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 
     private Map<String, Object> generateExtraClaims(UDUserVo user) {
