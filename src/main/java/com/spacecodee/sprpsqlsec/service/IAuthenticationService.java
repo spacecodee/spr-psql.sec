@@ -4,6 +4,7 @@ import com.spacecodee.sprpsqlsec.data.dto.RegisterUserDto;
 import com.spacecodee.sprpsqlsec.data.pojo.AuthenticationResponsePojo;
 import com.spacecodee.sprpsqlsec.data.vo.AuthenticationRequestVo;
 import com.spacecodee.sprpsqlsec.data.vo.SaveUserVo;
+import com.spacecodee.sprpsqlsec.data.vo.UDUserVo;
 
 public interface IAuthenticationService {
     RegisterUserDto registerOneCustomer(SaveUserVo newUser);
@@ -11,4 +12,6 @@ public interface IAuthenticationService {
     AuthenticationResponsePojo login(AuthenticationRequestVo request);
 
     boolean validateToken(String jwt);
+
+    UDUserVo findLoggedInUser();
 }

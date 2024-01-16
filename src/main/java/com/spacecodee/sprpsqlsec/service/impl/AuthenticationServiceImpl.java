@@ -5,6 +5,7 @@ import com.spacecodee.sprpsqlsec.data.pojo.AuthenticationResponsePojo;
 import com.spacecodee.sprpsqlsec.data.vo.AuthenticationRequestVo;
 import com.spacecodee.sprpsqlsec.data.vo.SaveUserVo;
 import com.spacecodee.sprpsqlsec.data.vo.UDUserVo;
+import com.spacecodee.sprpsqlsec.exceptions.ObjectNotFoundException;
 import com.spacecodee.sprpsqlsec.service.IAuthenticationService;
 import com.spacecodee.sprpsqlsec.service.IJwtService;
 import com.spacecodee.sprpsqlsec.service.IUserService;
@@ -12,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -65,6 +67,14 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             System.out.println(e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public UDUserVo findLoggedInUser() {
+        var auth = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+
+        var username = auth.getPrincipal().toString();
+        return this.userService.findOneByUsername(username).orElseThrow(() -> new ObjectNotFoundException("User isn't found with Username: " + username + "."));
     }
 
     private Map<String, Object> generateExtraClaims(UDUserVo user) {

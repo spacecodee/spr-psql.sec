@@ -2,6 +2,7 @@ package com.spacecodee.sprpsqlsec.controller;
 
 import com.spacecodee.sprpsqlsec.data.pojo.AuthenticationResponsePojo;
 import com.spacecodee.sprpsqlsec.data.vo.AuthenticationRequestVo;
+import com.spacecodee.sprpsqlsec.data.vo.UDUserVo;
 import com.spacecodee.sprpsqlsec.service.IAuthenticationService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -26,5 +27,10 @@ public class AuthenticationController {
         AuthenticationResponsePojo rsp = this.authenticationService.login(request);
 
         return ResponseEntity.ok(rsp);
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UDUserVo> profile() {
+        return ResponseEntity.ok(this.authenticationService.findLoggedInUser());
     }
 }
