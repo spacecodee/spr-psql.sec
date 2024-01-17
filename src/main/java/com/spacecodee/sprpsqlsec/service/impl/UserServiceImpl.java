@@ -29,7 +29,7 @@ public class UserServiceImpl implements IUserService {
         user.setName(newUser.getName());
         user.setUsername(newUser.getUsername());
         user.setPassword(this.passwordEncoder.encode(newUser.getPassword()));
-        user.setRole(RoleEnum.ROLE_CUSTOMER);
+        user.setRole(RoleEnum.CUSTOMER);
 
         this.userRepository.save(user);
 

@@ -48,6 +48,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         this.authenticationManager.authenticate(authentication);
 
         var userD = this.userService.findOneByUsername(request.getUsername()).get();
+
         String jwt = this.jwtService.generateToken(userD, this.generateExtraClaims(userD));
 
         AuthenticationResponsePojo rsp = new AuthenticationResponsePojo();

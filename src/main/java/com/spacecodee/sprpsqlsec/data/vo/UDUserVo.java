@@ -5,11 +5,14 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * DTO for {@link com.spacecodee.sprpsqlsec.persistence.entity.UserEntity}
@@ -31,8 +34,14 @@ public class UDUserVo implements UserDetails, Serializable {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == null) return Collections.emptyList();
 
-        return this.role.getPermissions().stream()
-                .map(Enum::name).map(each -> (GrantedAuthority) () -> each).toList();
+        List<SimpleGrantedAuthority> authoritiesList = new ArrayList<>(this.role.getPermissions().stream()
+                .map(Enum::name)
+                .map(SimpleGrantedAuthority::new)
+                .toList());
+
+        authoritiesList.add(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
+
+        return authoritiesList;
     }
 
     public static UDUserVo build(UDUserVo user) {
