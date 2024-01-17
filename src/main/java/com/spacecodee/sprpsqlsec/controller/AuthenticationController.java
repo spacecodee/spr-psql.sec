@@ -7,6 +7,7 @@ import com.spacecodee.sprpsqlsec.service.IAuthenticationService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -29,6 +30,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(rsp);
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR', 'CONSUMER')")
     @GetMapping("/profile")
     public ResponseEntity<UDUserVo> profile() {
         return ResponseEntity.ok(this.authenticationService.findLoggedInUser());

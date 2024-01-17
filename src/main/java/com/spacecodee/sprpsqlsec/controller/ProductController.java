@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR')")
     @GetMapping()
     public ResponseEntity<ApiResponseDataPojo<Page<ProductDto>>> findAll(Pageable pageable) {
         var productPage = this.productService.findAll(pageable);
@@ -41,6 +43,7 @@ public class ProductController {
         return new ResponseEntity<>(apiResponseDataPojo, HttpStatusCode.valueOf(apiResponseDataPojo.getStatusCode()));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR')")
     @GetMapping("/{productId}")
     public ResponseEntity<ApiResponseDataPojo<ProductDto>> findOneById(@PathVariable long productId) {
         var apiResponseDataPojo = new ApiResponseDataPojo<ProductDto>();
@@ -53,6 +56,7 @@ public class ProductController {
         return ResponseEntity.ok(apiResponseDataPojo);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PostMapping()
     public ResponseEntity<ApiResponsePojo> createOne(@RequestBody @Valid SaveProductVo saveProductVo) {
         var apiResponseDataPojo = new ApiResponsePojo();
@@ -63,6 +67,7 @@ public class ProductController {
         return new ResponseEntity<>(apiResponseDataPojo, HttpStatusCode.valueOf(apiResponseDataPojo.getStatusCode()));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR')")
     @PutMapping("/{productId}")
     public ResponseEntity<ApiResponsePojo> updateOneById(@PathVariable long productId, @RequestBody @Valid SaveProductVo updateVo) {
         var apiResponseDataPojo = new ApiResponsePojo();
@@ -73,6 +78,7 @@ public class ProductController {
         return new ResponseEntity<>(apiResponseDataPojo, HttpStatusCode.valueOf(apiResponseDataPojo.getStatusCode()));
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/{productId}/disabled")
     public ResponseEntity<ApiResponsePojo> disableOneById(@PathVariable long productId) {
         var apiResponseDataPojo = new ApiResponsePojo();

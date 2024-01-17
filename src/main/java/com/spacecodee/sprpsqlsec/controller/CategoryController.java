@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR')")
     @GetMapping()
     public ResponseEntity<ApiResponseDataPojo<Page<CategoryDto>>> findAll(Pageable pageable) {
         var categoryPage = this.categoryService.findAll(pageable);
@@ -41,6 +43,7 @@ public class CategoryController {
         return new ResponseEntity<>(apiResponseDataPojo, HttpStatusCode.valueOf(apiResponseDataPojo.getStatusCode()));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR')")
     @GetMapping("/{categoryId}")
     public ResponseEntity<ApiResponseDataPojo<CategoryDto>> findOneById(@PathVariable long categoryId) {
         var apiResponseDataPojo = new ApiResponseDataPojo<CategoryDto>();
@@ -53,6 +56,7 @@ public class CategoryController {
         return ResponseEntity.ok(apiResponseDataPojo);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PostMapping()
     public ResponseEntity<ApiResponsePojo> createOne(@RequestBody @Valid SaveCategoryVo saveCategoryVo) {
         var apiResponseDataPojo = new ApiResponsePojo();
@@ -63,6 +67,7 @@ public class CategoryController {
         return new ResponseEntity<>(apiResponseDataPojo, HttpStatusCode.valueOf(apiResponseDataPojo.getStatusCode()));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR')")
     @PutMapping("/{categoryId}")
     public ResponseEntity<ApiResponsePojo> updateOneById(@PathVariable long categoryId, @RequestBody @Valid SaveCategoryVo saveCategoryVo) {
         var apiResponseDataPojo = new ApiResponsePojo();
@@ -73,6 +78,7 @@ public class CategoryController {
         return new ResponseEntity<>(apiResponseDataPojo, HttpStatusCode.valueOf(apiResponseDataPojo.getStatusCode()));
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/{categoryId}/disabled")
     public ResponseEntity<ApiResponsePojo> disableOneById(@PathVariable long categoryId) {
         var apiResponseDataPojo = new ApiResponsePojo();

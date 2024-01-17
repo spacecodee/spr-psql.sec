@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +20,7 @@ import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 @AllArgsConstructor
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class HttpSecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
@@ -29,7 +31,7 @@ public class HttpSecurityConfig {
         return http.csrf(AbstractHttpConfigurer::disable).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(this.authenticationProvider)
                 .addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(HttpSecurityConfig::buildRequestMatchers).build();
+                .authorizeHttpRequests(HttpSecurityConfig::buildRequestMatchersV2).build();
     }
 
     private static void buildRequestMatchers(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorize) {
@@ -62,6 +64,16 @@ public class HttpSecurityConfig {
         authorize.requestMatchers(HttpMethod.GET, "/auth/profile")
                 .hasAnyRole(RoleEnum.ADMINISTRATOR.name(), RoleEnum.ASSISTANT_ADMINISTRATOR.name(), RoleEnum.CUSTOMER.name());
 
+        //Auth Public
+        authorize.requestMatchers(HttpMethod.POST, "/customer").permitAll();
+        authorize.requestMatchers(HttpMethod.POST, "/auth/authenticate").permitAll();
+        authorize.requestMatchers(HttpMethod.GET, "/auth/validate").permitAll();
+
+        //Auth
+        authorize.anyRequest().authenticated();
+    }
+
+    private static void buildRequestMatchersV2(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorize) {
         //Auth Public
         authorize.requestMatchers(HttpMethod.POST, "/customer").permitAll();
         authorize.requestMatchers(HttpMethod.POST, "/auth/authenticate").permitAll();
