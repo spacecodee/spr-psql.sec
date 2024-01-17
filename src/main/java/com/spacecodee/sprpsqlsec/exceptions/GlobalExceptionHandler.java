@@ -4,6 +4,7 @@ import com.spacecodee.sprpsqlsec.data.pojo.ApiErrorPojo;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -62,6 +63,16 @@ public class GlobalExceptionHandler {
         this.apiErrorPojo.setPath(request.getRequestURI());
         this.apiErrorPojo.setMethod(request.getMethod());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(this.apiErrorPojo);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorPojo> handlerAccessDeniedException(AccessDeniedException exception, HttpServletRequest request) {
+        this.apiErrorPojo.setBackendMessage(exception.getLocalizedMessage());
+        this.apiErrorPojo.setMessage("Access denied, you don't have permission to access this resource, please contact the administrator for more information");
+        this.apiErrorPojo.setTimestamp(LocalDateTime.now());
+        this.apiErrorPojo.setPath(request.getRequestURI());
+        this.apiErrorPojo.setMethod(request.getMethod());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(this.apiErrorPojo);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
