@@ -1,8 +1,7 @@
 package com.spacecodee.sprpsqlsec.data.vo;
 
-import com.spacecodee.sprpsqlsec.enums.RoleEnum;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.spacecodee.sprpsqlsec.data.dto.RoleDto;
+import com.spacecodee.sprpsqlsec.persistence.entity.security.UserEntity;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * DTO for {@link com.spacecodee.sprpsqlsec.persistence.entity.UserEntity}
+ * DTO for {@link UserEntity}
  */
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,19 +26,18 @@ public class UDUserVo implements UserDetails, Serializable {
     private String name;
     private String username;
     private String password;
-    @Enumerated(EnumType.STRING)
-    private RoleEnum role;
+    private RoleDto role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == null) return Collections.emptyList();
 
         List<SimpleGrantedAuthority> authoritiesList = new ArrayList<>(this.role.getPermissions().stream()
-                .map(Enum::name)
+                .map(each -> each.getOperationId().getTag())
                 .map(SimpleGrantedAuthority::new)
                 .toList());
 
-        authoritiesList.add(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
+        authoritiesList.add(new SimpleGrantedAuthority("ROLE_" + this.role.getName()));
 
         return authoritiesList;
     }

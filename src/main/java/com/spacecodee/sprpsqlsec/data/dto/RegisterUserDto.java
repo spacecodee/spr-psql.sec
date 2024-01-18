@@ -1,6 +1,6 @@
 package com.spacecodee.sprpsqlsec.data.dto;
 
-import com.spacecodee.sprpsqlsec.persistence.entity.UserEntity;
+import com.spacecodee.sprpsqlsec.persistence.entity.security.UserEntity;
 import lombok.Data;
 
 import java.io.Serializable;

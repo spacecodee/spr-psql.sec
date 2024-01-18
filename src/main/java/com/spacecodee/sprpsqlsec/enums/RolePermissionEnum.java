@@ -1,6 +1,6 @@
 package com.spacecodee.sprpsqlsec.enums;
 
-public enum RolePermission {
+public enum RolePermissionEnum {
 
     READ_ALL_PRODUCTS,
     READ_ONE_PRODUCT,

@@ -28,14 +28,14 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public RegisterUserDto registerOneCustomer(SaveUserVo newUser) {
-        UDUserVo user = userService.registerOneCustomer(newUser);
+        UDUserVo user = this.userService.registerOneCustomer(newUser);
 
         var userDto = new RegisterUserDto();
         userDto.setId(user.getId());
         userDto.setName(user.getName());
         userDto.setUsername(user.getUsername());
         userDto.setPassword(user.getPassword());
-        userDto.setRole(user.getRole().name());
+        userDto.setRole(user.getRole().getName());
 
         var jwt = this.jwtService.generateToken(user, this.generateExtraClaims(user));
         userDto.setJwt(jwt);
@@ -65,7 +65,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
             return true;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return false;
         }
     }
@@ -81,7 +80,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private Map<String, Object> generateExtraClaims(UDUserVo user) {
         return Map.of(
                 "name", user.getName(),
-                "role", user.getRole().name(),
+                "role", user.getRole().getName(),
                 "authorities", user.getAuthorities()
         );
     }

@@ -1,6 +1,5 @@
-package com.spacecodee.sprpsqlsec.persistence.entity;
+package com.spacecodee.sprpsqlsec.persistence.entity.security;
 
-import com.spacecodee.sprpsqlsec.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,7 +25,7 @@ public class UserEntity {
     @Basic
     @Column(name = "password", nullable = false)
     private String password;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private RoleEnum role;
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private RoleEntity role;
 }

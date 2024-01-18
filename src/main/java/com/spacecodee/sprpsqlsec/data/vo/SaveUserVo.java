@@ -1,5 +1,6 @@
 package com.spacecodee.sprpsqlsec.data.vo;
 
+import com.spacecodee.sprpsqlsec.persistence.entity.security.UserEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -7,7 +8,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.spacecodee.sprpsqlsec.persistence.entity.UserEntity}
+ * DTO for {@link UserEntity}
  */
 @Data
 public class SaveUserVo implements Serializable {

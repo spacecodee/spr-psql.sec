@@ -1,11 +1,14 @@
 package com.spacecodee.sprpsqlsec.service.impl;
 
+import com.spacecodee.sprpsqlsec.data.dto.RoleDto;
 import com.spacecodee.sprpsqlsec.data.vo.SaveUserVo;
 import com.spacecodee.sprpsqlsec.data.vo.UDUserVo;
-import com.spacecodee.sprpsqlsec.enums.RoleEnum;
 import com.spacecodee.sprpsqlsec.exceptions.InvalidPasswordException;
-import com.spacecodee.sprpsqlsec.persistence.entity.UserEntity;
+import com.spacecodee.sprpsqlsec.exceptions.ObjectNotFoundException;
+import com.spacecodee.sprpsqlsec.persistence.entity.security.RoleEntity;
+import com.spacecodee.sprpsqlsec.persistence.entity.security.UserEntity;
 import com.spacecodee.sprpsqlsec.persistence.repository.IUserRepository;
+import com.spacecodee.sprpsqlsec.service.IRoleService;
 import com.spacecodee.sprpsqlsec.service.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +21,7 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements IUserService {
 
+    private final IRoleService roleService;
     private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -29,7 +33,14 @@ public class UserServiceImpl implements IUserService {
         user.setName(newUser.getName());
         user.setUsername(newUser.getUsername());
         user.setPassword(this.passwordEncoder.encode(newUser.getPassword()));
-        user.setRole(RoleEnum.CUSTOMER);
+
+        var defaultRole = this.roleService.findDefaultRole().orElseThrow(() -> new ObjectNotFoundException("Role isn't found with Name:"));
+
+        var roleEntity = new RoleEntity();
+        roleEntity.setId(defaultRole.getId());
+        roleEntity.setName(defaultRole.getName());
+
+        user.setRole(roleEntity);
 
         this.userRepository.save(user);
 
@@ -37,7 +48,11 @@ public class UserServiceImpl implements IUserService {
         udUser.setId(user.getId());
         udUser.setName(user.getName());
         udUser.setUsername(user.getUsername());
-        udUser.setRole(user.getRole());
+        var roleDto = new RoleDto();
+        roleDto.setId(user.getRole().getId());
+        roleDto.setName(user.getRole().getName());
+
+        udUser.setRole(roleDto);
 
         return udUser;
     }
@@ -50,7 +65,12 @@ public class UserServiceImpl implements IUserService {
                     udUser.setId(user.getId());
                     udUser.setName(user.getName());
                     udUser.setUsername(user.getUsername());
-                    udUser.setRole(user.getRole());
+
+                    var roleDto = new RoleDto();
+                    roleDto.setId(user.getRole().getId());
+                    roleDto.setName(user.getRole().getName());
+
+                    udUser.setRole(roleDto);
 
                     return udUser;
                 });
