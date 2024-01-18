@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
@@ -28,13 +30,16 @@ public class HttpSecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationEntryPoint customAuthenticationEntryPoint;
     private final AccessDeniedHandler customAccessDeniedHandler;
+    private final AuthorizationManager<RequestAuthorizationContext> authorizationManager;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(this.authenticationProvider)
                 .addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(HttpSecurityConfig::buildRequestMatchers)
+                .authorizeHttpRequests(auth -> {
+                    auth.anyRequest().access(this.authorizationManager);
+                })
                 .exceptionHandling(exception -> {
                     exception.authenticationEntryPoint(this.customAuthenticationEntryPoint);
                     exception.accessDeniedHandler(this.customAccessDeniedHandler);

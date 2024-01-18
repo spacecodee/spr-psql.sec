@@ -70,6 +70,7 @@ public class UserServiceImpl implements IUserService {
                     roleDto.setId(user.getRole().getId());
                     roleDto.setName(user.getRole().getName());
 
+
                     udUser.setRole(roleDto);
 
                     return udUser;
