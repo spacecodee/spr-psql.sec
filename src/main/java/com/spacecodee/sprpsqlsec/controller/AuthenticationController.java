@@ -1,9 +1,11 @@
 package com.spacecodee.sprpsqlsec.controller;
 
+import com.spacecodee.sprpsqlsec.data.dto.LogoutResponseDto;
 import com.spacecodee.sprpsqlsec.data.pojo.AuthenticationResponsePojo;
 import com.spacecodee.sprpsqlsec.data.vo.AuthenticationRequestVo;
 import com.spacecodee.sprpsqlsec.data.vo.UDUserVo;
 import com.spacecodee.sprpsqlsec.service.IAuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +36,12 @@ public class AuthenticationController {
     @GetMapping("/profile")
     public ResponseEntity<UDUserVo> profile() {
         return ResponseEntity.ok(this.authenticationService.findLoggedInUser());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutResponseDto> logout(HttpServletRequest request) {
+        this.authenticationService.logout(request);
+
+        return ResponseEntity.ok(new LogoutResponseDto("Logout successful"));
     }
 }

@@ -9,6 +9,7 @@ import com.spacecodee.sprpsqlsec.exceptions.ObjectNotFoundException;
 import com.spacecodee.sprpsqlsec.service.IAuthenticationService;
 import com.spacecodee.sprpsqlsec.service.IJwtService;
 import com.spacecodee.sprpsqlsec.service.IUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -75,6 +76,11 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
         var username = auth.getPrincipal().toString();
         return this.userService.findOneByUsername(username).orElseThrow(() -> new ObjectNotFoundException("User isn't found with Username: " + username + "."));
+    }
+
+    @Override
+    public void logout(HttpServletRequest request) {
+
     }
 
     private Map<String, Object> generateExtraClaims(UDUserVo user) {
