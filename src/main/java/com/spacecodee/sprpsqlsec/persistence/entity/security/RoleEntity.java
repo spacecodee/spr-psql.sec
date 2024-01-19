@@ -22,7 +22,7 @@ public class RoleEntity {
     @Basic
     @Column(name = "name", nullable = false, length = 25)
     private String name;
-    @OneToMany(mappedBy = "roleId")
+    @OneToMany(mappedBy = "roleId", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<GrantedPermissionEntity> permissions;
 
