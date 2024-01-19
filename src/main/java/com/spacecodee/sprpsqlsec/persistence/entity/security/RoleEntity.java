@@ -1,5 +1,6 @@
 package com.spacecodee.sprpsqlsec.persistence.entity.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class RoleEntity {
     @Basic
     @Column(name = "name", nullable = false, length = 25)
     private String name;
+    @JsonIgnore
     @OneToMany(mappedBy = "roleId", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<GrantedPermissionEntity> permissions;
