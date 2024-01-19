@@ -5,9 +5,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -42,6 +44,22 @@ public class JwtServiceImpl implements IJwtService {
     @Override
     public String extractUsername(String jwt) {
         return this.extractAllClaims(jwt).getSubject();
+    }
+
+    @Override
+    public String extractJwtFromRequest(HttpServletRequest request) {
+        var authorizationHeader = request.getHeader("Authorization");
+
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ") || !StringUtils.hasText(authorizationHeader)) {
+            return null;
+        }
+
+        return authorizationHeader.split(" ")[1];
+    }
+
+    @Override
+    public Date extractExpiration(String jwt) {
+        return this.extractAllClaims(jwt).getExpiration();
     }
 
     private Claims extractAllClaims(String jwt) {

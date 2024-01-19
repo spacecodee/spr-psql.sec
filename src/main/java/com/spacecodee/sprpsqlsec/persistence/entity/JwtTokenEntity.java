@@ -4,7 +4,7 @@ import com.spacecodee.sprpsqlsec.persistence.entity.security.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,7 +22,7 @@ public class JwtTokenEntity {
     @Column(name = "token", nullable = false, length = 2048)
     private String token;
     @Column(name = "expiry_date", nullable = false)
-    private LocalDate expiryDate;
+    private Date expiryDate;
     @Column(name = "is_valid", nullable = false)
     private boolean isValid;
     @ManyToOne
